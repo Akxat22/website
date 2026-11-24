@@ -25,21 +25,21 @@
 </head>
 <body class="min-h-[100dvh] w-full overflow-x-hidden bg-[#fafaf9] text-stone-900 dark:bg-[#0c0a09] dark:text-stone-100 font-sans antialiased flex flex-col justify-between p-5 sm:p-10 md:p-12 select-none relative">
 
-    <!-- Subtle Chessboard Watermark -->
-    <div class="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.045]" style="background-image: conic-gradient(#78716c 90deg, transparent 90deg 180deg, #78716c 180deg 270deg, transparent 270deg); background-size: 72px 72px;"></div>
+    <!-- Interactive Chessboard & Knight Tactical Canvas -->
+    <canvas id="chessCanvas" class="pointer-events-none fixed inset-0 z-0 w-full h-full"></canvas>
 
     <!-- Top Row -->
     <header class="relative z-10 w-full flex items-center justify-between text-xs font-mono text-stone-400 dark:text-stone-500">
         <span class="flex items-center gap-2 font-medium text-stone-800 dark:text-stone-200 tracking-tight py-1">
             <span class="text-base leading-none">♞</span> akxat.in
         </span>
-        <span id="moveCoord" class="transition-opacity duration-200 py-1">1. e4 · e5</span>
+        <span id="moveCoord" class="transition-opacity duration-200 py-1">e4 · e5</span>
     </header>
 
     <!-- Center Content -->
     <main class="relative z-10 w-full max-w-lg mx-auto text-center my-auto py-8 px-2 sm:px-4">
         <!-- Minimal Knight Emblem -->
-        <div id="knightBadge" class="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-900 text-xl sm:text-2xl shadow-sm ring-1 ring-black/5 dark:ring-white/10 mb-5 sm:mb-7 transition-transform duration-300 hover:-translate-y-0.5">
+        <div id="knightBadge" class="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-900 text-xl sm:text-2xl shadow-sm ring-1 ring-black/5 dark:ring-white/10 mb-5 sm:mb-7 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
             ♞
         </div>
 
@@ -55,14 +55,11 @@
             Solo software developer crafting clean, thoughtful code — one calculated move at a time.
         </p>
 
-        <!-- Primary Actions -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 max-w-xs sm:max-w-none mx-auto mb-6 sm:mb-7">
-            <a href="https://github.com/akxat22" target="_blank" rel="noopener noreferrer" class="px-6 py-3.5 sm:py-3 text-sm font-medium text-stone-50 bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200 rounded-xl shadow-sm transition-all duration-150 active:scale-95">
+        <!-- Primary Action -->
+        <div class="flex items-center justify-center max-w-xs sm:max-w-none mx-auto mb-6 sm:mb-7">
+            <a href="https://github.com/akxat22" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-7 py-3.5 sm:py-3 text-sm font-medium text-stone-50 bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200 rounded-xl shadow-sm hover:shadow transition-all duration-150 active:scale-95">
                 GitHub ↗
             </a>
-            <button onclick="makeMove()" class="px-5 py-3.5 sm:py-3 text-sm font-medium text-stone-700 dark:text-stone-300 bg-stone-200/70 hover:bg-stone-200 dark:bg-stone-900 dark:hover:bg-stone-800 border border-stone-300/60 dark:border-stone-800 rounded-xl transition-all duration-150 active:scale-95">
-                Your Move ♟
-            </button>
         </div>
 
         <!-- Live Projects -->
@@ -70,7 +67,7 @@
             <a href="https://villagesim.akxat.in/" target="_blank" rel="noopener noreferrer" title="Village simulation game demo" class="px-3.5 py-2 text-xs font-mono text-stone-700 dark:text-stone-300 bg-stone-200/50 hover:bg-stone-200/90 dark:bg-stone-900/80 dark:hover:bg-stone-800/90 border border-stone-300/50 dark:border-stone-800 rounded-lg transition-all duration-150 active:scale-95">
                 Village Sim ↗
             </a>
-            <a href="https://resumemaker.akxat.in" target="_blank" rel="noopener noreferrer" title="Build a clean resume" class="px-3.5 py-2 text-xs font-mono text-stone-700 dark:text-stone-300 bg-stone-200/50 hover:bg-stone-200/90 dark:bg-stone-900/80 dark:hover:bg-stone-800/90 border border-stone-300/50 dark:border-stone-800 rounded-lg transition-all duration-150 active:scale-95">
+            <a href="https://resumemake.akxat.in" target="_blank" rel="noopener noreferrer" title="Build a clean resume" class="px-3.5 py-2 text-xs font-mono text-stone-700 dark:text-stone-300 bg-stone-200/50 hover:bg-stone-200/90 dark:bg-stone-900/80 dark:hover:bg-stone-800/90 border border-stone-300/50 dark:border-stone-800 rounded-lg transition-all duration-150 active:scale-95">
                 Resume Maker ↗
             </a>
             <a href="https://builder.akxat.in" target="_blank" rel="noopener noreferrer" title="Architect floor map builder" class="px-3.5 py-2 text-xs font-mono text-stone-700 dark:text-stone-300 bg-stone-200/50 hover:bg-stone-200/90 dark:bg-stone-900/80 dark:hover:bg-stone-800/90 border border-stone-300/50 dark:border-stone-800 rounded-lg transition-all duration-150 active:scale-95">
@@ -106,14 +103,199 @@
     </div>
 
     <script>
-        const moves = [
-            { coord: "1. e4 · e5", text: "1. e4 — Let's build something great." },
-            { coord: "1. Nf3 · d5", text: "1. Nf3 — Clean architecture ahead." },
-            { coord: "1. d4 · Nf6", text: "1. d4 — Solid foundations first." },
-            { coord: "1. c4 · e5", text: "1. c4 — Challenge me @InsaneBanda." }
-        ];
-        let moveIndex = 0;
         let timer;
+        const canvas = document.getElementById('chessCanvas');
+        const ctx = canvas.getContext('2d');
+        const moveCoord = document.getElementById('moveCoord');
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        // Crisp, fine square tile size
+        const TILE_SIZE = 48;
+        let pointer = { x: width * 0.5, y: height * 0.45, active: false };
+        let smoothPointer = { x: width * 0.5, y: height * 0.45 };
+        let activeCell = null;
+        let litTiles = new Map(); // "col,row" -> intensity (0..1)
+        let waves = []; // Expanding tactical shockwaves
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        window.addEventListener('resize', resizeCanvas, { passive: true });
+        resizeCanvas();
+
+        function isDarkMode() {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+
+        function getGridMetrics() {
+            const cols = Math.ceil(width / TILE_SIZE) + 2;
+            const rows = Math.ceil(height / TILE_SIZE) + 2;
+            const offsetX = (width - cols * TILE_SIZE) / 2;
+            const offsetY = (height - rows * TILE_SIZE) / 2;
+            return { cols, rows, offsetX, offsetY };
+        }
+
+        function getCellFromPoint(x, y) {
+            const { offsetX, offsetY } = getGridMetrics();
+            const col = Math.floor((x - offsetX) / TILE_SIZE);
+            const row = Math.floor((y - offsetY) / TILE_SIZE);
+            return { col, row };
+        }
+
+        function updatePointer(x, y) {
+            pointer.x = x;
+            pointer.y = y;
+            pointer.active = true;
+
+            const cell = getCellFromPoint(x, y);
+            const key = `${cell.col},${cell.row}`;
+            litTiles.set(key, 1);
+
+            if (!activeCell || activeCell.col !== cell.col || activeCell.row !== cell.row) {
+                activeCell = cell;
+                const file = files[((cell.col % 8) + 8) % 8];
+                const rank = 8 - (((cell.row % 8) + 8) % 8);
+                moveCoord.textContent = `♞ ${file}${rank}`;
+            }
+        }
+
+        function triggerShockwave(x, y) {
+            const cell = getCellFromPoint(x, y);
+            waves.push({
+                col: cell.col,
+                row: cell.row,
+                radius: 0,
+                maxRadius: 14,
+                alpha: 0.85
+            });
+            const file = files[((cell.col % 8) + 8) % 8];
+            const rank = 8 - (((cell.row % 8) + 8) % 8);
+            moveCoord.textContent = `N${file}${rank}!`;
+        }
+
+        document.addEventListener('mousemove', (e) => updatePointer(e.clientX, e.clientY), { passive: true });
+        document.addEventListener('mouseleave', () => {
+            pointer.active = false;
+            activeCell = null;
+            moveCoord.textContent = 'e4 · e5';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('a, button')) return;
+            triggerShockwave(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0 && !e.target.closest('a, button')) {
+                updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+                triggerShockwave(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            const dark = isDarkMode();
+            const { cols, rows, offsetX, offsetY } = getGridMetrics();
+
+            // Smoothly follow cursor
+            smoothPointer.x += (pointer.x - smoothPointer.x) * 0.14;
+            smoothPointer.y += (pointer.y - smoothPointer.y) * 0.14;
+
+            // Advance click shockwaves
+            for (let i = waves.length - 1; i >= 0; i--) {
+                waves[i].radius += 0.42;
+                waves[i].alpha *= 0.96;
+                if (waves[i].radius > waves[i].maxRadius || waves[i].alpha < 0.02) {
+                    waves.splice(i, 1);
+                }
+            }
+
+            // Decay hovered trail tiles
+            for (const [key, val] of litTiles.entries()) {
+                const next = val * 0.94;
+                if (next < 0.015) litTiles.delete(key);
+                else litTiles.set(key, next);
+            }
+
+            const spotlightRadius = Math.min(width, height) * 0.34;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const x = offsetX + c * TILE_SIZE;
+                    const y = offsetY + r * TILE_SIZE;
+                    const cx = x + TILE_SIZE * 0.5;
+                    const cy = y + TILE_SIZE * 0.5;
+
+                    const isDarkSquare = (r + c) % 2 === 1;
+                    const dist = Math.hypot(cx - smoothPointer.x, cy - smoothPointer.y);
+                    const proximity = pointer.active ? Math.max(0, 1 - dist / spotlightRadius) : 0;
+                    const trailBoost = litTiles.get(`${c},${r}`) || 0;
+
+                    // Wave ripple boost (Chebyshev / Queen-move ring)
+                    let waveBoost = 0;
+                    for (const w of waves) {
+                        const dGrid = Math.max(Math.abs(c - w.col), Math.abs(r - w.row));
+                        const band = Math.abs(dGrid - w.radius);
+                        if (band < 1.1) {
+                            waveBoost = Math.max(waveBoost, (1 - band / 1.1) * w.alpha);
+                        }
+                    }
+
+                    // Base subtle chessboard pattern
+                    let fillAlpha = isDarkSquare ? 0.026 : 0.0;
+                    // Smooth spotlight & trail illumination
+                    fillAlpha += proximity * proximity * (isDarkSquare ? 0.065 : 0.035);
+                    fillAlpha += trailBoost * 0.06;
+                    fillAlpha += waveBoost * 0.09;
+
+                    if (fillAlpha > 0.002) {
+                        ctx.fillStyle = dark
+                            ? `rgba(245, 245, 244, ${fillAlpha})`
+                            : `rgba(28, 25, 23, ${fillAlpha})`;
+                        ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                    }
+
+                    // Crisp hairline grid borders that fade in softly near cursor or wave
+                    const borderAlpha = proximity * proximity * 0.14 + trailBoost * 0.16 + waveBoost * 0.22;
+                    if (borderAlpha > 0.01) {
+                        ctx.strokeStyle = dark
+                            ? `rgba(245, 245, 244, ${borderAlpha})`
+                            : `rgba(28, 25, 23, ${borderAlpha})`;
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(x + 0.5, y + 0.5, TILE_SIZE - 1, TILE_SIZE - 1);
+                    }
+                }
+            }
+
+            // Crisp highlight frame on the exact hovered square
+            if (activeCell && pointer.active) {
+                const hx = offsetX + activeCell.col * TILE_SIZE;
+                const hy = offsetY + activeCell.row * TILE_SIZE;
+                ctx.strokeStyle = dark ? 'rgba(245, 245, 244, 0.28)' : 'rgba(28, 25, 23, 0.24)';
+                ctx.lineWidth = 1.25;
+                ctx.strokeRect(hx + 1, hy + 1, TILE_SIZE - 2, TILE_SIZE - 2);
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        render();
 
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -123,21 +305,6 @@
             timer = setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-1');
             }, 2400);
-        }
-
-        function makeMove() {
-            const current = moves[moveIndex % moves.length];
-            const moveCoord = document.getElementById('moveCoord');
-            const badge = document.getElementById('knightBadge');
-
-            moveCoord.textContent = current.coord;
-            moveIndex++;
-
-            // Subtle knight nudge
-            badge.style.transform = 'translateY(-3px)';
-            setTimeout(() => badge.style.transform = '', 180);
-
-            showToast(current.text);
         }
 
         function copyEmail() {
